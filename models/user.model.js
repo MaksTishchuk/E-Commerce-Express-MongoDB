@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: ''
     },
+    address: {
+      type: String,
+      default: ''
+    },
     role: {
       type: String,
       default: "user",
@@ -37,15 +41,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    // cart: {
-    //   type: Array,
-    //   default: [],
-    // },
-    address: {
-      type: String,
-      default: ''
+    cart: {
+      type: Array,
+      default: [],
     },
-    // wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
     // refreshToken: {
     //   type: String,
     // },
@@ -57,5 +57,14 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 )
+
+userSchema.pre('save', async function(next) {
+  const salt = await bcrypt.genSaltSync(10)
+  this.password = await bcrypt.hash(this.password, salt)
+})
+
+userSchema.methods.isPasswordMatched = async function(enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password)
+}
 
 export default mongoose.model('User', userSchema)
