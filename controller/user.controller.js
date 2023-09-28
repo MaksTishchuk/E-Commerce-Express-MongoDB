@@ -44,7 +44,7 @@ export const deleteUser = async (req, res) => {
   const {id} = req.params
   validateMongoId(id)
   const deletedUser = await UserModel.findByIdAndDelete(id).select('-password -__v -refreshToken')
-  if (!deletedUser) throw new MyError('User was not found!', 404)
+  if (!deletedUser) throw new MyError('User was not deleted!', 404)
   res.json(deletedUser)
 }
 
