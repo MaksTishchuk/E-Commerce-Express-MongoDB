@@ -8,6 +8,7 @@ import compression from 'compression'
 import hpp from 'hpp'
 import morgan from 'morgan'
 import helmet from 'helmet'
+import cookieParser from 'cookie-parser'
 import { ErrorMiddleware } from './middlewares/error.middleware.js'
 
 dotenv.config()
@@ -23,6 +24,7 @@ app.use(helmet())
 app.use(compression())
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
 app.use(bodyParser.json({ limit: '10mb' }))
+app.use(cookieParser())
 
 app.use('/api', router)
 

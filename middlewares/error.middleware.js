@@ -6,7 +6,7 @@ export const ErrorMiddleware = (error, req, res, next) => {
     return res.status(400).send({
       status: 400,
       type: "ValidationError",
-      details: error.details
+      details: error.errors
     })
   }
   if (error instanceof MyError) {
