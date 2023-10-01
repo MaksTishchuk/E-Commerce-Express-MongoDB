@@ -7,6 +7,7 @@ import categoriesRouter from './category.route.js'
 import blogCategoriesRouter from './blog-category.route.js'
 import brandRouter from './brand.route.js'
 import colorRouter from './color.route.js'
+import couponRouter from './coupon.route.js'
 
 const router = Router()
 
@@ -18,5 +19,6 @@ router.use('/categories', categoriesRouter)
 router.use('/blog-categories', blogCategoriesRouter)
 router.use('/brands', brandRouter)
 router.use('/colors', colorRouter)
+router.use('/coupons', couponRouter)
 
 export default router
