@@ -29,10 +29,6 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    // brand: {
-    //   type: String,
-    //   required: true,
-    // },
     quantity: {
       type: Number,
       required: true,
@@ -56,10 +52,14 @@ const productSchema = new mongoose.Schema(
         postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       },
     ],
-    // totalRating: {
-    //   type: String,
-    //   default: 0,
-    // },
+    totalRatings: {
+      type: Number,
+      default: 0,
+    },
+    averageRating: {
+      type: Number,
+      default: 0,
+    }
   },
   {
     timestamps: true,

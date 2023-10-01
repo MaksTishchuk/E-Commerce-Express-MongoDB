@@ -91,3 +91,48 @@ export const addToWishList = async (req, res) => {
   }
   return res.json(user)
 }
+
+export const productRating = async (req, res) => {
+  const id = req.user.id
+  validateMongoId(id)
+  const {star, comment, productId} = req.body
+  validateMongoId(productId)
+  let product = await ProductModel.findById(productId, {__v: 0})
+  if (!product) throw new MyError('Product was not found!', 404)
+  let alreadyRated = product.ratings.find((el) => el.postedBy.toString() === id.toString())
+  if (alreadyRated) {
+    product = await ProductModel.findOneAndUpdate(
+      {
+        ratings: {$elemMatch: alreadyRated}
+      },
+      {
+        $set: {
+          "ratings.$.star": star,
+          "ratings.$.comment": comment
+        }
+      },
+      {new: true}
+    )
+  } else {
+    product = await ProductModel.findByIdAndUpdate(productId, {
+      $push: {
+        ratings: {
+          star,
+          comment,
+          postedBy: id
+        }
+      },
+      $inc: {totalRatings: 1}
+    }, {new: true})
+  }
+  product = await ProductModel.findByIdAndUpdate(
+    productId,
+    [{
+      $set: {
+        averageRating: {$avg: "$ratings.star"}
+      }
+    }],
+    {new: true}
+  )
+  return res.json(product)
+}
