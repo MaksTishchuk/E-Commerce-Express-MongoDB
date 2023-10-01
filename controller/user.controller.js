@@ -49,21 +49,32 @@ export const deleteUser = async (req, res) => {
 }
 
 export const myProfile = async (req, res) => {
-  validateMongoId(req.user._id)
-  const findUser = await UserModel.findOne({_id: req.user._id}, {password: 0, __v: 0, refreshToken: 0})
+  validateMongoId(req.user.id)
+  const findUser = await UserModel.findOne(
+    {_id: req.user._id}, {password: 0, __v: 0, refreshToken: 0}
+  ).populate('wishlist')
   if (!findUser)  throw new MyError('User was not found!', 404)
   res.json(findUser)
 }
 
 export const updateProfile = async (req, res) => {
-  const id = req.user._id
+  const id = req.user.id
   validateMongoId(id)
   const updatedUser = await UserModel.findByIdAndUpdate(id, {
     firstname: req.body.firstname,
     lastname: req.body.lastname,
     mobile: req.body.mobile,
     address: req.body.address
-  }, {new: true}).select('-password -__v -refreshToken')
+  }, {new: true}).select('-password -__v -refreshToken').populate('wishlist')
   if (!updatedUser)  throw new MyError('User was not updated!', 400)
   res.json(updatedUser)
+}
+
+export const getWishlist = async (req, res) => {
+  validateMongoId(req.user.id)
+  const findUser = await UserModel.findOne(
+    {_id: req.user._id}
+  ).select('wishlist').populate('wishlist')
+  if (!findUser)  throw new MyError('User wishlist was not found!', 404)
+  res.json(findUser)
 }

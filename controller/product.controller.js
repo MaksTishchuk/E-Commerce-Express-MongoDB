@@ -1,4 +1,5 @@
 import ProductModel from '../models/product.model.js'
+import UserModel from '../models/user.model.js'
 import {MyError} from "../exceptions/myError.js"
 import {validateMongoId} from "../utils/validateMongoId.js"
 import {pagination} from "../utils/pagination.js"
@@ -69,4 +70,24 @@ export const deleteProduct = async (req, res) => {
   const deletedProduct = await ProductModel.findByIdAndDelete(id).select('-__v')
   if (!deletedProduct) throw new MyError('Product was not deleted!', 404)
   res.json(deletedProduct)
+}
+
+export const addToWishList = async (req, res) => {
+  const id = req.user.id
+  validateMongoId(id)
+  const productId = req.body.productId
+  validateMongoId(productId)
+  let user = await UserModel.findById(id)
+  if (!user) throw new MyError('User was not found!', 404)
+  const alreadyAdded = user.wishlist.find((id) => id.toString() === productId)
+  if (alreadyAdded) {
+    user = await UserModel.findByIdAndUpdate(id, {
+      $pull: {wishlist: productId}
+    }, {new: true}).populate('wishlist')
+  } else {
+    user = await UserModel.findByIdAndUpdate(id, {
+      $push: {wishlist: productId}
+    }, {new: true}).populate('wishlist')
+  }
+  return res.json(user)
 }
